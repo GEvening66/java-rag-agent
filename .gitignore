@@ -1,0 +1,9 @@
+# 密钥、生成缓存和本地数据不要提交到 GitHub
+config.py
+cache/
+data/
+memory/
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/

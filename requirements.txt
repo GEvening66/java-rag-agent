@@ -1,0 +1,4 @@
+# 第 2 课开始才需要安装：pip install -r requirements.txt
+# 第 1 课只用 Python 标准库，不需要装任何东西
+openai>=1.0
+numpy

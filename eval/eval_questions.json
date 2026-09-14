@@ -1,0 +1,134 @@
+[
+  {
+    "question": "HashMap 的默认负载因子是多少？",
+    "type": "fact",
+    "answer": "0.75",
+    "source_doc": "HashMap.md"
+  },
+  {
+    "question": "JDK 8 中 HashMap 的链表什么时候会转成红黑树？",
+    "type": "fact",
+    "answer": "链表长度超过阈值（默认 8）且数组长度达到 64",
+    "source_doc": "HashMap.md"
+  },
+  {
+    "question": "HashMap 扩容时容量变成原来的几倍？",
+    "type": "fact",
+    "answer": "2 倍",
+    "source_doc": "HashMap.md"
+  },
+  {
+    "question": "wait 和 notify 必须在什么代码块内使用？",
+    "type": "fact",
+    "answer": "synchronized 块",
+    "source_doc": "多线程.md"
+  },
+  {
+    "question": "volatile 能保证原子性吗？",
+    "type": "fact",
+    "answer": "不保证原子性",
+    "source_doc": "多线程.md"
+  },
+  {
+    "question": "死锁的四个必要条件是什么？",
+    "type": "fact",
+    "answer": "互斥、占有且等待、不可剥夺、循环等待",
+    "source_doc": "多线程.md"
+  },
+  {
+    "question": "JVM 中哪个区域是唯一不会 OOM 的？",
+    "type": "fact",
+    "answer": "程序计数器",
+    "source_doc": "JVM.md"
+  },
+  {
+    "question": "JDK 8 之后 JVM 的方法区改叫什么？",
+    "type": "fact",
+    "answer": "元空间 Metaspace",
+    "source_doc": "JVM.md"
+  },
+  {
+    "question": "JVM 新生代 Eden 和两个 Survivor 的比例是多少？",
+    "type": "fact",
+    "answer": "8:1:1",
+    "source_doc": "JVM.md"
+  },
+  {
+    "question": "JDK 9 起 JVM 的默认垃圾收集器是什么？",
+    "type": "fact",
+    "answer": "G1",
+    "source_doc": "JVM.md"
+  },
+  {
+    "question": "Integer 包装类默认缓存了哪个范围的数值？",
+    "type": "fact",
+    "answer": "[-128，127]",
+    "source_doc": "java-basic-questions-01.md"
+  },
+  {
+    "question": "String s1 = new String(\"abc\"); 这句话创建了几个字符串对象？",
+    "type": "fact",
+    "answer": "1 或 2 个字符串对象",
+    "source_doc": "java-basic-questions-02.md"
+  },
+  {
+    "question": "获取 Class 对象有哪几种方式？",
+    "type": "fact",
+    "answer": "四种方式",
+    "source_doc": "reflection.md"
+  },
+  {
+    "question": "HashMap 不是线程安全的，工程上应该用什么替代？",
+    "type": "multi",
+    "answer": "ConcurrentHashMap 或 Collections.synchronizedMap",
+    "source_doc": "HashMap.md"
+  },
+  {
+    "question": "为什么重写 equals() 时通常必须重写 hashCode()？",
+    "type": "multi",
+    "answer": "HashMap 可能找不到已经放入的 key",
+    "source_doc": "HashMap.md"
+  },
+  {
+    "question": "线程池任务队列满且线程数达到最大值时会发生什么？",
+    "type": "multi",
+    "answer": "执行拒绝策略",
+    "source_doc": "多线程.md"
+  },
+  {
+    "question": "新生代对象朝生夕灭，适合用什么垃圾回收算法？",
+    "type": "multi",
+    "answer": "复制算法",
+    "source_doc": "JVM.md"
+  },
+  {
+    "question": "JDK 动态代理和 CGLIB 动态代理有什么区别？",
+    "type": "multi",
+    "answer": "要求被代理的类必须实现接口",
+    "source_doc": "java-basic-questions-03.md"
+  },
+  {
+    "question": "Spring Boot 怎么配置数据源？",
+    "type": "no_answer",
+    "answer": "资料中没有相关信息（应拒绝回答，不能编造）",
+    "source_doc": "无"
+  },
+  {
+    "question": "MySQL 的索引为什么用 B+ 树？",
+    "type": "no_answer",
+    "answer": "资料中没有相关信息（应拒绝回答，不能编造）",
+    "source_doc": "无"
+  },
+  {
+    "question": "Redis 的持久化机制有哪些？",
+    "type": "no_answer",
+    "answer": "资料中没有相关信息（应拒绝回答，不能编造）",
+    "source_doc": "无"
+  },
+  {
+    "question": "Docker 和虚拟机有什么区别？",
+    "type": "no_answer",
+    "answer": "资料中没有相关信息（应拒绝回答，不能编造）",
+    "source_doc": "无"
+  }
+]
