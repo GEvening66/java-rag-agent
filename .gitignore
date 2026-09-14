@@ -7,3 +7,7 @@ __pycache__/
 *.pyc
 .venv/
 .pytest_cache/
+
+# 个人求职材料（仅本地：补课清单 + 简历/面试速查）
+LEARNING_PLAN.md
+SHOWCASE.md
