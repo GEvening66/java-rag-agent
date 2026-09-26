@@ -12,7 +12,19 @@
 import httpx
 
 from . import llm, settings
-from .search import cosine_scores
+from .bm25 import BM25
+from .search import cosine_scores, rrf_fuse
+
+# BM25 索引缓存（按 chunks 列表身份缓存，避免每次检索重建）
+_BM25_CACHE = {}
+
+
+def _get_bm25(chunks):
+    key = (len(chunks), id(chunks))
+    if _BM25_CACHE.get("key") != key:
+        _BM25_CACHE["key"] = key
+        _BM25_CACHE["bm25"] = BM25(chunks)
+    return _BM25_CACHE["bm25"]
 
 
 def _rerank_url():
@@ -52,31 +64,42 @@ def rerank(query, documents, top_n=None, timeout=30):
     return parse_rerank_response(resp.json())
 
 
-def retrieve(question, index, top_k=None, recall_k=None, use_rerank=None):
-    """两级检索：粗召回 recall_k 条 → 精排 → 返回 top_k 条的 (原始下标, 文本)。
+def retrieve(question, index, top_k=None, recall_k=None, use_rerank=None, use_hybrid=None):
+    """检索：粗召回（向量 + 可选 BM25 混合）→ cross-encoder 精排 → top_k 条 (原始下标, 文本)。
 
-    rerank 失败自动回退向量顺序（保证可用性，绝不阻断主流程）。
+    - use_hybrid：None=按 settings.USE_HYBRID；混合时用 **RRF 融合** 向量与 BM25 两路召回
+      （BM25 解决"专有符号 token"问题，如 `java.lang.StackOverflowError`）
+    - use_rerank：None=按 settings.USE_RERANK；False 时直接返回融合后的顺序
+    - rerank 失败自动回退（保证可用性，绝不阻断主流程）
     """
     top_k = top_k or settings.TOP_K
     recall_k = recall_k or settings.RECALL_K
     use_rerank = settings.USE_RERANK if use_rerank is None else use_rerank
+    use_hybrid = settings.USE_HYBRID if use_hybrid is None else use_hybrid
 
     chunks, vecs = index
     recall_k = min(recall_k, len(chunks))
     q_vec = llm.embed_texts([question])[0]
     scores = cosine_scores(q_vec, vecs)
-    recall_idx = sorted(range(len(chunks)), key=lambda i: -scores[i])[:recall_k]
+    vector_order = sorted(range(len(chunks)), key=lambda i: -scores[i])[:recall_k]
 
-    if not use_rerank or len(recall_idx) <= top_k:
-        return [(i, chunks[i]) for i in recall_idx[:top_k]]
+    candidates = vector_order
+    if use_hybrid:
+        bm25_order = _get_bm25(chunks).top_k(question, k=recall_k)
+        if bm25_order:
+            fused = rrf_fuse([vector_order, bm25_order], k=settings.RRF_K)
+            candidates = [i for i, _score in fused][:recall_k]
+
+    if not use_rerank or len(candidates) <= top_k:
+        return [(i, chunks[i]) for i in candidates[:top_k]]
 
     try:
-        ranked = rerank(question, [chunks[i] for i in recall_idx], top_n=top_k)
-        picked = [recall_idx[pos] for pos, _score in ranked if 0 <= pos < len(recall_idx)]
+        ranked = rerank(question, [chunks[i] for i in candidates], top_n=top_k)
+        picked = [candidates[pos] for pos, _score in ranked if 0 <= pos < len(candidates)]
         if not picked:                      # 解析为空 → 回退
-            picked = recall_idx[:top_k]
+            picked = candidates[:top_k]
     except Exception:                       # 网络/额度/模型不可用 → 回退，不阻断
-        picked = recall_idx[:top_k]
+        picked = candidates[:top_k]
     return [(i, chunks[i]) for i in picked]
 
 

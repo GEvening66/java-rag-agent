@@ -37,6 +37,10 @@ RECALL_K = 50          # 粗召回条数（cross-encoder 的候选集大小）
 USE_RERANK = True      # 是否启用重排（rerank 失败会自动回退为向量顺序）
 RERANK_MODEL = "BAAI/bge-reranker-v2-m3"
 
+# ---------- 混合检索（向量 + BM25，RRF 融合）----------
+USE_HYBRID = True      # 实测依据：解决"专有符号 token"召回问题（java.lang.StackOverflowError 排第 90 名）
+RRF_K = 60             # RRF 平滑常数（只用排名、不用分数，免调权重）
+
 # ---------- 护栏与循环上限（agent 循环必须有界）----------
 GROUNDING_PASS = 0.5    # 引用接地率：通过阈值
 GROUNDING_MIN = 0.25    # 越权判定：整体接地率低于它 = 越权标注

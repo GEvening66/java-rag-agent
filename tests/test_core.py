@@ -187,3 +187,37 @@ def test_loose_caliber_false_positive_vs_evidence():
 def test_evidence_judgment_empty_evidence():
     from agent.evaluate import _evidence_in_chunks
     assert _evidence_in_chunks("", ["任意块内容"]) is False       # no_answer 题证据句为空
+
+
+# ---------- 混合检索：分词 / BM25 / RRF ----------
+
+def test_tokenize_keeps_code_tokens_and_cjk_bigrams():
+    from agent.bm25 import tokenize
+    toks = tokenize("java.lang.StackOverflowError 栈深度超限")
+    assert "stackoverflowerror" in toks          # camelCase 不拆、整体小写
+    assert "java" in toks and "lang" in toks
+    assert "栈深" in toks and "度超" in toks      # 中文二字组
+    assert "栈" not in toks                      # 单字被丢弃（防高频字假匹配）
+    assert tokenize("锁") == ["锁"]               # 单字查询保留
+
+
+def test_bm25_finds_exact_token_doc():
+    from agent.bm25 import BM25
+    docs = [
+        "字符串常量池与 StringBuilder 的讨论",
+        "栈深度超限会抛 StackOverflowError",
+        "HashMap 的默认负载因子是 0.75",
+    ]
+    bm = BM25(docs)
+    # 专有符号 token 精确命中（这正是纯向量检索的短板）
+    assert bm.top_k("java.lang.StackOverflowError", k=1) == [1]
+    assert bm.top_k("负载因子", k=1) == [2]
+    assert bm.top_k("完全不相干的词", k=1) == []   # 无命中返回空（不凑数）
+
+
+def test_rrf_fuse_prefers_docs_in_both_lists():
+    from agent.search import rrf_fuse
+    fused = dict(rrf_fuse([[0, 1, 2], [2, 0, 3]], k=60))
+    order = [i for i, _s in sorted(fused.items(), key=lambda kv: -kv[1])]
+    assert order[:2] == [0, 2]        # 两路都出现的文档排在前面
+    assert set(fused) == {0, 1, 2, 3}  # 单路出现的也保留
