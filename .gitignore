@@ -1,13 +1,31 @@
 # 密钥、生成缓存和本地数据不要提交到 GitHub
 config.py
 cache/
-data/
 memory/
+logs/
 __pycache__/
 *.pyc
 .venv/
 .pytest_cache/
+pytest-cache-files-*/
 
-# 个人求职材料（仅本地：补课清单 + 简历/面试速查）
+# data/：第三方文档（JavaGuide 等）不入库；自写文档与说明入库以保证基准可复现
+data/*
+!data/README.md
+!data/干扰_*.md
+!data/HashMap.md
+!data/多线程.md
+!data/JVM.md
+
+# 个人求职材料（仅本地：简历 + 补课清单 + 面试速查 + 演练清单 + 错题本）
+RESUME.md
+resume.html
+resume_*.pdf
+*.pdf
+.edge-tmp/
+.pylibs/
 LEARNING_PLAN.md
 SHOWCASE.md
+PRODUCTION_DRILLS.md
+INTERVIEW_NOTES.md
+REVIEW_CARDS.md

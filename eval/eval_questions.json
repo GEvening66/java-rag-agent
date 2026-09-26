@@ -2,133 +2,415 @@
   {
     "question": "HashMap 的默认负载因子是多少？",
     "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "0.75",
+    "evidence": "默认负载因子是 0.75，意思是当元素个数超过 容量 × 0.75 时触发扩容",
     "source_doc": "HashMap.md"
   },
   {
     "question": "JDK 8 中 HashMap 的链表什么时候会转成红黑树？",
     "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "链表长度超过阈值（默认 8）且数组长度达到 64",
+    "evidence": "当链表长度超过阈值（默认 8）且数组长度达到 64 时，链表会转成红黑树",
     "source_doc": "HashMap.md"
   },
   {
     "question": "HashMap 扩容时容量变成原来的几倍？",
     "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "2 倍",
+    "evidence": "扩容时容量翻倍（变成原来的 2 倍）",
     "source_doc": "HashMap.md"
   },
   {
     "question": "wait 和 notify 必须在什么代码块内使用？",
     "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "synchronized 块",
+    "evidence": "wait 和 notify 必须在 synchronized 块内使用",
     "source_doc": "多线程.md"
   },
   {
     "question": "volatile 能保证原子性吗？",
     "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "不保证原子性",
+    "evidence": "volatile 保证可见性但不保证原子性",
     "source_doc": "多线程.md"
   },
   {
     "question": "死锁的四个必要条件是什么？",
     "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "互斥、占有且等待、不可剥夺、循环等待",
+    "evidence": "互斥、占有且等待、不可剥夺、循环等待",
     "source_doc": "多线程.md"
   },
   {
     "question": "JVM 中哪个区域是唯一不会 OOM 的？",
     "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "程序计数器",
+    "evidence": "程序计数器：记录当前线程执行到哪一行字节码，线程私有，唯一不会 OOM 的区域",
     "source_doc": "JVM.md"
   },
   {
     "question": "JDK 8 之后 JVM 的方法区改叫什么？",
     "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "元空间 Metaspace",
+    "evidence": "方法区（JDK 8 后叫元空间 Metaspace）",
     "source_doc": "JVM.md"
   },
   {
     "question": "JVM 新生代 Eden 和两个 Survivor 的比例是多少？",
     "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "8:1:1",
+    "evidence": "新生代就用这个思路（Eden + 两个 Survivor，比例 8:1:1）",
     "source_doc": "JVM.md"
   },
   {
     "question": "JDK 9 起 JVM 的默认垃圾收集器是什么？",
     "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "G1",
+    "evidence": "G1 把堆分成 Region，可预测停顿时间，JDK 9 起成为默认收集器",
     "source_doc": "JVM.md"
   },
   {
     "question": "Integer 包装类默认缓存了哪个范围的数值？",
     "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "[-128，127]",
+    "evidence": "默认创建了数值 [-128，127] 的相应类型的缓存数据",
     "source_doc": "java-basic-questions-01.md"
   },
   {
     "question": "String s1 = new String(\"abc\"); 这句话创建了几个字符串对象？",
     "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "1 或 2 个字符串对象",
+    "evidence": "会创建 1 或 2 个字符串对象",
     "source_doc": "java-basic-questions-02.md"
   },
   {
     "question": "获取 Class 对象有哪几种方式？",
     "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "四种方式",
+    "evidence": "Java 提供了四种方式获取 Class 对象",
     "source_doc": "reflection.md"
+  },
+  {
+    "question": "HashMap 底层用的是什么数据结构？",
+    "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
+    "answer": "数组 + 链表 + 红黑树",
+    "evidence": "数组 + 链表 + 红黑树",
+    "source_doc": "HashMap.md"
+  },
+  {
+    "question": "多个 key 落到同一个桶时 HashMap 怎么处理？",
+    "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
+    "answer": "用链表把冲突的节点串起来（拉链法）",
+    "evidence": "如果多个 key 落进同一个桶，就用链表把冲突的节点串起来",
+    "source_doc": "HashMap.md"
+  },
+  {
+    "question": "JDK 8 的 hash 扰动函数把什么也参与运算？",
+    "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
+    "answer": "把高 16 位也参与运算",
+    "evidence": "把高 16 位也参与运算，减少哈希碰撞",
+    "source_doc": "HashMap.md"
+  },
+  {
+    "question": "HashMap 扩容时元素需要做什么操作？",
+    "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
+    "answer": "重新计算桶位置（rehash）",
+    "evidence": "所有元素要重新计算桶位置（rehash）",
+    "source_doc": "HashMap.md"
+  },
+  {
+    "question": "实现 Runnable 和继承 Thread 更推荐哪个？为什么？",
+    "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
+    "answer": "实现 Runnable 更推荐",
+    "evidence": "实现 Runnable 更推荐，因为 Java 是单继承，实现接口不占用继承位",
+    "source_doc": "多线程.md"
+  },
+  {
+    "question": "synchronized 锁可以被同一个线程重复获取吗？",
+    "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
+    "answer": "锁是可重入的",
+    "evidence": "锁是可重入的：同一个线程可以多次获取同一把锁",
+    "source_doc": "多线程.md"
+  },
+  {
+    "question": "notify 和 notifyAll 有什么区别？",
+    "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
+    "answer": "notify 随机唤醒一个等待线程，notifyAll 唤醒全部",
+    "evidence": "notify 随机唤醒一个等待线程，notifyAll 唤醒全部",
+    "source_doc": "多线程.md"
+  },
+  {
+    "question": "JVM 虚拟机栈深度超限会抛什么错误？",
+    "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
+    "answer": "StackOverflowError",
+    "evidence": "栈深度超限会抛 StackOverflowError",
+    "source_doc": "JVM.md"
+  },
+  {
+    "question": "JVM 用什么方法判断对象是否可回收？",
+    "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
+    "answer": "可达性分析",
+    "evidence": "可达性分析：从 GC Roots（栈帧局部变量、静态变量、常量等）出发",
+    "source_doc": "JVM.md"
+  },
+  {
+    "question": "JDK 8 的元空间用什么内存实现？",
+    "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
+    "answer": "本地内存",
+    "evidence": "JDK 8 用本地内存实现元空间，不再容易 OOM",
+    "source_doc": "JVM.md"
+  },
+  {
+    "question": "ZGC 的停顿时间控制在什么量级？",
+    "type": "fact",
+    "difficulty": "easy",
+    "query_style": "natural",
+    "answer": "毫秒级以内",
+    "evidence": "ZGC 进一步把停顿时间控制在毫秒级以内，适合超大堆",
+    "source_doc": "JVM.md"
   },
   {
     "question": "HashMap 不是线程安全的，工程上应该用什么替代？",
     "type": "multi",
+    "difficulty": "medium",
+    "query_style": "natural",
     "answer": "ConcurrentHashMap 或 Collections.synchronizedMap",
+    "evidence": "需要线程安全时，用 ConcurrentHashMap 或 Collections.synchronizedMap",
     "source_doc": "HashMap.md"
   },
   {
     "question": "为什么重写 equals() 时通常必须重写 hashCode()？",
     "type": "multi",
+    "difficulty": "medium",
+    "query_style": "natural",
     "answer": "HashMap 可能找不到已经放入的 key",
+    "evidence": "重写 equals 时通常必须重写 hashCode，否则 HashMap 可能找不到已经放入的 key",
     "source_doc": "HashMap.md"
   },
   {
     "question": "线程池任务队列满且线程数达到最大值时会发生什么？",
     "type": "multi",
+    "difficulty": "medium",
+    "query_style": "natural",
     "answer": "执行拒绝策略",
+    "evidence": "线程数到最大且队列满则执行拒绝策略",
     "source_doc": "多线程.md"
   },
   {
     "question": "新生代对象朝生夕灭，适合用什么垃圾回收算法？",
     "type": "multi",
+    "difficulty": "medium",
+    "query_style": "natural",
     "answer": "复制算法",
+    "evidence": "新生代就用这个思路（Eden + 两个 Survivor，比例 8:1:1）",
     "source_doc": "JVM.md"
   },
   {
     "question": "JDK 动态代理和 CGLIB 动态代理有什么区别？",
     "type": "multi",
+    "difficulty": "medium",
+    "query_style": "natural",
     "answer": "要求被代理的类必须实现接口",
+    "evidence": "JDK 动态代理是官方的，它要求被代理的类必须实现接口",
     "source_doc": "java-basic-questions-03.md"
+  },
+  {
+    "question": "线程池的任务提交顺序是怎样的？",
+    "type": "multi",
+    "difficulty": "medium",
+    "query_style": "natural",
+    "answer": "先让核心线程处理；核心线程满则进队列",
+    "evidence": "任务提交时：先让核心线程处理；核心线程满则进队列",
+    "source_doc": "多线程.md"
+  },
+  {
+    "question": "老年代适合哪种垃圾回收算法？为什么？",
+    "type": "multi",
+    "difficulty": "medium",
+    "query_style": "natural",
+    "answer": "适合老年代，无碎片",
+    "evidence": "标记-整理：标记后把存活对象向一端移动，适合老年代，无碎片",
+    "source_doc": "JVM.md"
+  },
+  {
+    "question": "对象在什么条件下会晋升到老年代？",
+    "type": "multi",
+    "difficulty": "medium",
+    "query_style": "natural",
+    "answer": "熬过多次 Minor GC 的对象晋升到老年代",
+    "evidence": "熬过多次 Minor GC 的对象晋升到老年代",
+    "source_doc": "JVM.md"
+  },
+  {
+    "question": "死锁在工程上常用什么办法打破？",
+    "type": "multi",
+    "difficulty": "medium",
+    "query_style": "natural",
+    "answer": "统一加锁顺序",
+    "evidence": "工程上常用\"统一加锁顺序\"来打破循环等待",
+    "source_doc": "多线程.md"
+  },
+  {
+    "question": "那个 HashMap 的加载因子默认是多少来着",
+    "type": "fact",
+    "difficulty": "hard",
+    "query_style": "colloquial",
+    "answer": "0.75",
+    "evidence": "默认负载因子是 0.75，意思是当元素个数超过 容量 × 0.75 时触发扩容",
+    "source_doc": "HashMap.md"
+  },
+  {
+    "question": "volatlie 能保证原子行吗",
+    "type": "fact",
+    "difficulty": "hard",
+    "query_style": "typo",
+    "answer": "不保证原子性",
+    "evidence": "volatile 保证可见性但不保证原子性",
+    "source_doc": "多线程.md"
+  },
+  {
+    "question": "死琐的四个必要条件是啥",
+    "type": "fact",
+    "difficulty": "hard",
+    "query_style": "typo",
+    "answer": "互斥、占有且等待、不可剥夺、循环等待",
+    "evidence": "互斥、占有且等待、不可剥夺、循环等待",
+    "source_doc": "多线程.md"
+  },
+  {
+    "question": "jvm 新生代的 minor gc 什么时候发生",
+    "type": "fact",
+    "difficulty": "hard",
+    "query_style": "colloquial",
+    "answer": "Minor GC 频繁且快",
+    "evidence": "用复制算法，Minor GC 频繁且快",
+    "source_doc": "JVM.md"
+  },
+  {
+    "question": "java.lang.StackOverflowError 一般是什么原因导致的？",
+    "type": "fact",
+    "difficulty": "hard",
+    "query_style": "stacktrace",
+    "answer": "栈深度超限会抛 StackOverflowError",
+    "evidence": "栈深度超限会抛 StackOverflowError",
+    "source_doc": "JVM.md"
+  },
+  {
+    "question": "为什么程序计数器是唯一不会 OOM 的区域？",
+    "type": "fact",
+    "difficulty": "hard",
+    "query_style": "colloquial",
+    "answer": "线程私有，唯一不会 OOM 的区域",
+    "evidence": "程序计数器：记录当前线程执行到哪一行字节码，线程私有，唯一不会 OOM 的区域",
+    "source_doc": "JVM.md"
   },
   {
     "question": "Spring Boot 怎么配置数据源？",
     "type": "no_answer",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "资料中没有相关信息（应拒绝回答，不能编造）",
+    "evidence": "",
     "source_doc": "无"
   },
   {
     "question": "MySQL 的索引为什么用 B+ 树？",
     "type": "no_answer",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "资料中没有相关信息（应拒绝回答，不能编造）",
+    "evidence": "",
     "source_doc": "无"
   },
   {
     "question": "Redis 的持久化机制有哪些？",
     "type": "no_answer",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "资料中没有相关信息（应拒绝回答，不能编造）",
+    "evidence": "",
     "source_doc": "无"
   },
   {
     "question": "Docker 和虚拟机有什么区别？",
     "type": "no_answer",
+    "difficulty": "easy",
+    "query_style": "natural",
     "answer": "资料中没有相关信息（应拒绝回答，不能编造）",
+    "evidence": "",
+    "source_doc": "无"
+  },
+  {
+    "question": "Kubernetes 的 Pod 和容器有什么区别？",
+    "type": "no_answer",
+    "difficulty": "easy",
+    "query_style": "natural",
+    "answer": "资料中没有相关信息（应拒绝回答，不能编造）",
+    "evidence": "",
+    "source_doc": "无"
+  },
+  {
+    "question": "Kafka 怎么保证消息不丢失？",
+    "type": "no_answer",
+    "difficulty": "easy",
+    "query_style": "natural",
+    "answer": "资料中没有相关信息（应拒绝回答，不能编造）",
+    "evidence": "",
+    "source_doc": "无"
+  },
+  {
+    "question": "Nginx 怎么做负载均衡？",
+    "type": "no_answer",
+    "difficulty": "easy",
+    "query_style": "natural",
+    "answer": "资料中没有相关信息（应拒绝回答，不能编造）",
+    "evidence": "",
     "source_doc": "无"
   }
 ]

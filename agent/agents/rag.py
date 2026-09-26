@@ -18,10 +18,9 @@ def _parse_json(text):
 
 
 def retrieve(question, index, k=settings.TOP_K):
-    """检索 top-k 块（返回文本列表）。"""
-    chunks, vecs = index
-    q_vec = llm.embed_texts([question])[0]
-    return [chunks[i] for i in search_top_k(q_vec, vecs, k=k)]
+    """检索 top-k 块（两级检索：向量粗召回 + cross-encoder 重排）。"""
+    from .. import rerank
+    return rerank.retrieve_texts(question, index, top_k=k)
 
 
 def answer(question, index, k=settings.TOP_K, verbose=True):
@@ -40,7 +39,10 @@ JSON："""
 
     answer_text, citations = "", []
     for attempt in range(2):
-        text = llm.chat_text([{"role": "user", "content": prompt}])
+        try:
+            text = llm.chat_text([{"role": "user", "content": prompt}])
+        except Exception as exc:  # 重试后仍失败 → 优雅降级，不让用户看到堆栈
+            return f"⚠️ 模型服务暂时不可用（{type(exc).__name__}），请稍后重试。", [], retrieved
         data = _parse_json(text)
         if data is None:
             return text[:200], [], retrieved

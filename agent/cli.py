@@ -6,11 +6,13 @@
      memory   "问题" --user u1  带长期记忆的问答
      clarify                    交互式澄清问答
      eval     retrieval|e2e|cost 分层评测
+     metrics                    可观测性指标（读 logs/traces.jsonl）
      app                        提示如何启动 Web 界面
 """
 import argparse
+import json
 
-from . import evaluate
+from . import evaluate, observability
 from . import index as index_mod
 from .agents import clarify, memory, qa, rag, tools
 
@@ -30,13 +32,39 @@ def main(argv=None):
     p.add_argument("--user", default="demo_user")
     sub.add_parser("clarify", help="交互式澄清问答")
     p = sub.add_parser("eval", help="分层评测")
-    p.add_argument("which", choices=["retrieval", "e2e", "cost"])
+    p.add_argument("which", choices=["retrieval", "e2e", "cost", "evidence"])
+    p = sub.add_parser("diag", help="单题诊断：定位某题为什么没检索到（参数=评测集题号）")
+    p.add_argument("no", type=int)
+    sub.add_parser("metrics", help="可观测性指标（平均轮次/重复调用率/P95 延迟/token）")
+    p = sub.add_parser("forget", help="删除某用户全部记忆（被遗忘权）")
+    p.add_argument("--user", default="demo_user")
+    p = sub.add_parser("export", help="导出某用户记忆（数据可携带权）")
+    p.add_argument("--user", default="demo_user")
     sub.add_parser("app", help="Web 界面启动方式")
 
     args = parser.parse_args(argv)
 
     if args.cmd == "app":
-        print("Web 界面：streamlit run scripts/06_app.py")
+        print("Web 界面：streamlit run web.py")
+        return
+    if args.cmd == "metrics":
+        print(json.dumps(observability.metrics(), ensure_ascii=False, indent=2))
+        return
+    if args.cmd == "eval" and args.which == "evidence":
+        # 证据句自检：只读 cache/chunks.json，不需要任何 API
+        evaluate.evidence_check()
+        return
+    if args.cmd == "diag":
+        from . import diagnose as diagnose_mod
+        diagnose_mod.diagnose(args.no)
+        return
+    if args.cmd == "forget":
+        removed = memory.delete_user(args.user)
+        print(f"[记忆] 已删除用户 {args.user} 的记忆" if removed
+              else f"[记忆] 用户 {args.user} 没有记忆文件")
+        return
+    if args.cmd == "export":
+        print(json.dumps(memory.export_user(args.user), ensure_ascii=False, indent=2))
         return
 
     index = index_mod.build_index()

@@ -64,31 +64,40 @@ python -m agent qa     "线程池的拒绝策略有哪几种？"     # 质检 Ag
 python -m agent memory "线程池有哪些核心参数？" --user u1
 python -m agent clarify                                # 交互式澄清
 python -m agent eval   retrieval|e2e|cost              # 分层评测
+python -m agent metrics                                # 可观测指标（轮次/重复率/P95）
+streamlit run web.py                                   # Web 界面（完整链路）
 pip install pytest && python -m pytest tests -q        # 单测
 ```
 
 > 注：`scripts/` 是逐课教学版本（每个脚本对应一个知识点，便于理解原理）；
-> `agent/` 是重构后的工程化版本（去重复、统一入口、带单测），面试展示用这个。
+> `agent/` 是重构后的工程化版本（分层架构、统一入口、可观测性、带单测），
+> `web.py` 是基于它的 Web 界面——面试展示用这两个。
 
 ## 📊 评测结果（详见 [REPORT.md](REPORT.md)）
 
+**基准**：13 份文档 / 269 块（含 5 份"主题相近但无关"的干扰文档）· 39 题可评测（fact 30 / multi 9）+ 7 题 no_answer · 难度分层 easy 24 / medium 9 / **hard 6**（口语化 / 错别字 / 堆栈）
+
 | 指标 | 结果 |
 |---|---|
-| 检索 recall@3（数据清洗后） | **100%**（清洗前 94%——清洗带来可量化收益） |
-| 端到端正确率（fact / multi） | **100%**（LLM-as-judge + 人工抽样复核） |
-| 拒答率（no_answer） | **100%**（指标曾误报 50%，修复后证实模型全部诚实拒答） |
-| 平均成本 / 次 | ≈ **¥0.0047**（约半分钱） |
+| 检索 recall@3（**两级检索 + 重排**） | **97%**（38/39）｜ easy 100% · medium 100% · **hard 83%** |
+| 检索 recall@3（纯向量，对照） | 90%（35/39）｜ easy 96% · medium 89% · **hard 67%** |
+| **重排增益** | 总体 **+7** 个点，medium +11，**hard 层 +16 个点** |
+| 端到端正确率 / 拒答率 | 100% / 100%（旧基准 22 题；新基准复测中） |
+| 平均成本 / 次 | ≈ **¥0.005**（约半分钱） |
+
+> 📌 结论：早期基准上"全指标 100%"是**基准太容易**导致饱和；加入干扰文档与难度分层后，
+> 真实水平（95%/90%）与重排的价值（hard 层 +16）才显现出来。详见 REPORT.md 的三条故事。
 
 ## 🚀 快速开始
 
 ```bash
-pip install openai numpy streamlit
-# 1. 在 config.py 填入 DeepSeek / 硅基流动 API Key（不入库）
-# 2. 评测：python scripts/03_eval.py
-# 3. 工具 Agent 演示：python scripts/08_tool_agent.py "HashMap 的负载因子是多少？"
-# 4. 质检 Agent 演示：python scripts/10_qa_agent.py "线程池的拒绝策略有哪几种？"
-# 5. 长期记忆演示：python scripts/11_memory.py "线程池有哪些核心参数？" user1
-# 6. Web 演示：streamlit run scripts/06_app.py
+pip install openai numpy streamlit pytest
+# 1. 在 config.py 填入 DeepSeek / 硅基流动 API Key（config.py 已被 .gitignore 忽略）
+# 2. Web 界面（完整链路）：streamlit run web.py     → http://localhost:8501
+# 3. 命令行问答：python -m agent qa "线程池的拒绝策略有哪几种？"
+# 4. 分层评测：python -m agent eval retrieval|e2e|cost
+# 5. 可观测指标：python -m agent metrics
+# 6. 单测：python -m pytest tests -q
 ```
 
 ## 🛠️ 技术栈
