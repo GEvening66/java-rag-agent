@@ -4,9 +4,9 @@
 """
 import numpy as np
 
-from agent.guardrails import armor, check_citations, grounding_score
-from agent.search import search_top_k
-from agent.text import chunk_text, clean_text
+from agent.core.guardrails import armor, check_citations, grounding_score
+from agent.core.text import chunk_text, clean_text
+from agent.retrieval.search import search_top_k
 
 
 # ---------- 切分 ----------
@@ -69,13 +69,13 @@ def test_search_top_k_order():
 # ---------- 可观测性 ----------
 
 def test_arg_hash_is_key_order_insensitive():
-    from agent.observability import arg_hash
+    from agent.core.observability import arg_hash
     assert arg_hash({"a": 1, "b": 2}) == arg_hash({"b": 2, "a": 1})
     assert arg_hash({"a": 1}) != arg_hash({"a": 2})
 
 
 def test_metrics_aggregation():
-    from agent.observability import metrics
+    from agent.core.observability import metrics
     traces = [
         {"total_ms": 100, "hit_max_steps": False, "spans": [
             {"name": "llm", "tokens": 10},
@@ -99,7 +99,7 @@ def test_metrics_aggregation():
 # ---------- 失败恢复 ----------
 
 def test_retry_succeeds_after_transient_failures():
-    from agent.llm import _with_retry
+    from agent.core.llm import _with_retry
     calls = {"n": 0}
 
     def flaky():
@@ -113,7 +113,7 @@ def test_retry_succeeds_after_transient_failures():
 
 
 def test_retry_does_not_retry_non_retryable():
-    from agent.llm import _with_retry
+    from agent.core.llm import _with_retry
     calls = {"n": 0}
 
     def fatal():
@@ -128,14 +128,14 @@ def test_retry_does_not_retry_non_retryable():
 
 
 def test_is_retryable_default_is_conservative():
-    from agent.llm import is_retryable
+    from agent.core.llm import is_retryable
     assert is_retryable(ValueError("普通异常")) is False
 
 
 # ---------- 记忆：写入门槛 / 检索门槛 / 合规 ----------
 
 def test_memory_write_gate():
-    from agent.agents.memory import is_storable
+    from agent.pipeline.memory import is_storable
     assert is_storable("HashMap 的默认负载因子是 0.75，元素数超过容量×0.75 时触发扩容。")
     assert not is_storable("")                      # 空
     assert not is_storable("太短")                   # 过短
@@ -144,7 +144,7 @@ def test_memory_write_gate():
 
 
 def test_memory_similarity_threshold():
-    from agent.agents.memory import select_relevant
+    from agent.pipeline.memory import select_relevant
     texts = ["a", "b", "c"]
     scores = [0.9, 0.2, 0.5]
     assert select_relevant(texts, scores, k=2, min_sim=0.35) == [0, 2]  # 低于阈值被过滤
@@ -154,7 +154,7 @@ def test_memory_similarity_threshold():
 # ---------- 重排（cross-encoder）----------
 
 def test_parse_rerank_response():
-    from agent.rerank import parse_rerank_response
+    from agent.retrieval.rerank import parse_rerank_response
     # 兼容 relevance_score 与 score 两种字段命名
     data = {"results": [{"index": 2, "relevance_score": 0.3},
                         {"index": 0, "relevance_score": 0.9},
@@ -168,7 +168,7 @@ def test_parse_rerank_response():
 # ---------- 评测口径：证据句（严格）vs 短答案（宽松）----------
 
 def test_evidence_judgment_is_markdown_robust():
-    from agent.evaluate import _evidence_in_chunks
+    from agent.evaluation.evaluate import _evidence_in_chunks
     # 原文里有 markdown 加粗 **[-128，127]**，证据句不含星号，也应能匹配
     chunks = ["这 4 种包装类默认创建了数值 **[-128，127]** 的相应类型的缓存数据，"]
     assert _evidence_in_chunks("默认创建了数值 [-128，127] 的相应类型的缓存数据", chunks)
@@ -178,21 +178,21 @@ def test_evidence_judgment_is_markdown_robust():
 
 def test_loose_caliber_false_positive_vs_evidence():
     """短答案会假阳性命中，长证据句不会——这就是把口径改严的原因。"""
-    from agent.evaluate import _answer_in_chunks, _evidence_in_chunks
+    from agent.evaluation.evaluate import _answer_in_chunks, _evidence_in_chunks
     noisy = ["浮点数运算会有精度丢失：0.1 + 0.2 的结果约为 0.75 倍的误差上限"]
     assert _answer_in_chunks("0.75", noisy) is True              # 宽松口径：误判命中 ⚠️
     assert _evidence_in_chunks("默认负载因子是 0.75", noisy) is False  # 严格口径：不误判 ✅
 
 
 def test_evidence_judgment_empty_evidence():
-    from agent.evaluate import _evidence_in_chunks
+    from agent.evaluation.evaluate import _evidence_in_chunks
     assert _evidence_in_chunks("", ["任意块内容"]) is False       # no_answer 题证据句为空
 
 
 # ---------- 混合检索：分词 / BM25 / RRF ----------
 
 def test_tokenize_keeps_code_tokens_and_cjk_bigrams():
-    from agent.bm25 import tokenize
+    from agent.retrieval.bm25 import tokenize
     toks = tokenize("java.lang.StackOverflowError 栈深度超限")
     assert "stackoverflowerror" in toks          # camelCase 不拆、整体小写
     assert "java" in toks and "lang" in toks
@@ -202,7 +202,7 @@ def test_tokenize_keeps_code_tokens_and_cjk_bigrams():
 
 
 def test_bm25_finds_exact_token_doc():
-    from agent.bm25 import BM25
+    from agent.retrieval.bm25 import BM25
     docs = [
         "字符串常量池与 StringBuilder 的讨论",
         "栈深度超限会抛 StackOverflowError",
@@ -216,8 +216,26 @@ def test_bm25_finds_exact_token_doc():
 
 
 def test_rrf_fuse_prefers_docs_in_both_lists():
-    from agent.search import rrf_fuse
+    from agent.retrieval.search import rrf_fuse
     fused = dict(rrf_fuse([[0, 1, 2], [2, 0, 3]], k=60))
     order = [i for i, _s in sorted(fused.items(), key=lambda kv: -kv[1])]
     assert order[:2] == [0, 2]        # 两路都出现的文档排在前面
     assert set(fused) == {0, 1, 2, 3}  # 单路出现的也保留
+
+
+# ---------- 语料装载：说明/法律文本不能进索引 ----------
+
+def test_load_documents_skips_readme_and_license():
+    """README* / LICENSE* / NOTICE* 是说明书与法律文本，不是知识。
+
+    背景：实测把 README.md 与许可证文本当语料会凭空多出 3 + 29 块——
+    既污染检索，又让"重建索引的块数"与评测报告对不上（静默偏差）。
+    用真实语料目录校验（不写临时文件，任何环境都能跑）。
+    """
+    from agent.core.text import load_documents
+
+    names = {n.lower() for n in load_documents()}
+    assert not [n for n in names if n.startswith(("readme", "license", "notice"))]
+    # 反向断言：别把正文也一起滤掉了
+    assert "hashmap.md" in names and "多线程.md" in names
+    assert "java-basic-questions-01.md" in names    # 第三方语料同样要进索引

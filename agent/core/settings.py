@@ -1,20 +1,48 @@
-"""全局配置：路径、模型、阈值集中一处，其他模块只从这里读。
+"""全局配置：路径、模型、阈值集中一处，core / retrieval / pipeline / evaluation / serving 都只从这里读。
 
 为什么要集中：之前每个脚本各写一遍 Key/路径/阈值，改一处要改十处。
+
+为什么路径不靠"文件在第几层"数目录：用**向上找项目根标记**的方式定位根目录——
+模块被移进分层子包时，cache / logs / memory 不会静默指到错误位置（分层重构最容易踩的坑）。
 """
 import os
 import sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_MARKERS = ("requirements.txt", "config.example.py")   # 项目根目录的标记文件
+
+
+def _find_root(start):
+    """从 start 向上找含根标记的目录；找不到则返回 start。"""
+    cur = start
+    for _ in range(6):
+        if any(os.path.exists(os.path.join(cur, m)) for m in _MARKERS):
+            return cur
+        parent = os.path.dirname(cur)
+        if parent == cur:      # 已到盘符根
+            break
+        cur = parent
+    return start
+
+
+# 部署/多实例时可用环境变量显式覆盖
+ROOT = os.environ.get("AGENT_ROOT") or _find_root(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-import config  # noqa: E402  （项目根目录的 config.py，已被 .gitignore 忽略）
+try:
+    import config  # noqa: E402  （项目根目录的 config.py，已被 .gitignore 忽略）
+except ImportError as exc:      # 新 clone 的仓库只有 config.example.py
+    raise SystemExit(
+        "缺少配置文件：请把 config.example.py 复制为 config.py 并填入 API Key。\n"
+        f"期望位置：{os.path.join(ROOT, 'config.py')}"
+    ) from exc
 
 # ---------- 路径 ----------
 DATA_DIR = os.path.join(ROOT, "data")
-CACHE_DIR = os.path.join(ROOT, "cache")
-MEMORY_DIR = os.path.join(ROOT, "memory")
+RUNTIME_DIR = os.path.join(ROOT, "runtime")          # 运行时产物集中一处，便于 gitignore 与清理
+CACHE_DIR = os.path.join(RUNTIME_DIR, "cache")       # 向量索引缓存
+LOG_DIR = os.path.join(RUNTIME_DIR, "logs")          # trace 落盘
+MEMORY_DIR = os.path.join(RUNTIME_DIR, "memory")     # 长期记忆（按用户一个文件）
 EVAL_PATH = os.path.join(ROOT, "eval", "eval_questions.json")
 
 # ---------- 模型 ----------

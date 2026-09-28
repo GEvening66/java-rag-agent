@@ -1,23 +1,22 @@
 # 密钥、生成缓存和本地数据不要提交到 GitHub
 config.py
-cache/
-memory/
-logs/
+# 运行时产物集中一处：runtime/cache（向量索引缓存）/ runtime/logs（trace）/ runtime/memory（长期记忆）
+runtime/
 __pycache__/
 *.pyc
 .venv/
 .pytest_cache/
 pytest-cache-files-*/
 
-# data/：第三方文档（JavaGuide 等）不入库；自写文档与说明入库以保证基准可复现
-data/*
-!data/README.md
-!data/干扰_*.md
-!data/HashMap.md
-!data/多线程.md
-!data/JVM.md
+# data/ 全部入库：语料必须和代码在一起，否则"本地能跑、clone 跑不出报告的测评数字"
+#   - 自写：HashMap.md / 多线程.md / JVM.md / 干扰_*.md
+#   - 第三方：java-basic-questions-01|02|03.md / reflection.md / io流.md
+#     （JavaGuide，Apache-2.0：署名见 THIRD_PARTY_NOTICES.md，许可证副本见 data/LICENSE-JavaGuide.txt）
+#   - 故意不写 `data/*` 白名单：新增语料若被静默忽略，就会再次造成"数字不可复现"
 
-# 个人求职材料（仅本地：简历 + 补课清单 + 面试速查 + 演练清单 + 错题本）
+# 个人求职材料（整目录仅本地）：简历 / 补课清单 / 面试速查 / 演练清单 / 错题本
+personal/
+# 下面几条是保险：万一这些文件又被放回根目录，也仍然不会被提交
 RESUME.md
 resume.html
 resume_*.pdf

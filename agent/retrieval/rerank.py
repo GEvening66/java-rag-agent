@@ -11,7 +11,7 @@
 """
 import httpx
 
-from . import llm, settings
+from ..core import llm, settings
 from .bm25 import BM25
 from .search import cosine_scores, rrf_fuse
 

@@ -15,7 +15,7 @@ import uuid
 
 from . import settings
 
-TRACE_DIR = os.path.join(settings.ROOT, "logs")
+TRACE_DIR = settings.LOG_DIR
 TRACE_FILE = os.path.join(TRACE_DIR, "traces.jsonl")
 
 

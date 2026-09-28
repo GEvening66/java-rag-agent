@@ -7,7 +7,7 @@ import os
 
 import numpy as np
 
-from . import llm, settings, text as text_utils
+from ..core import llm, settings, text as text_utils
 
 
 def _cache_paths():

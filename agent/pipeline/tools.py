@@ -10,8 +10,9 @@ import json
 import os
 import time
 
-from .. import guardrails, llm, observability, rerank, settings
-from ..search import search_top_k
+from ..core import guardrails, llm, observability, settings
+from ..retrieval import rerank
+from ..retrieval.search import search_top_k
 
 
 def search_knowledge(query, index, k=settings.TOP_K):

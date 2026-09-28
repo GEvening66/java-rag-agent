@@ -7,7 +7,7 @@
 import json
 import re
 
-from .. import llm, settings
+from ..core import llm, settings
 from . import tools
 
 

@@ -12,9 +12,10 @@
 import argparse
 import json
 
-from . import evaluate, observability
-from . import index as index_mod
-from .agents import clarify, memory, qa, rag, tools
+from ..core import observability
+from ..evaluation import evaluate
+from ..pipeline import clarify, memory, qa, rag, tools
+from ..retrieval import index as index_mod
 
 
 def main(argv=None):
@@ -55,7 +56,7 @@ def main(argv=None):
         evaluate.evidence_check()
         return
     if args.cmd == "diag":
-        from . import diagnose as diagnose_mod
+        from ..evaluation import diagnose as diagnose_mod
         diagnose_mod.diagnose(args.no)
         return
     if args.cmd == "forget":

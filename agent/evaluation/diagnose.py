@@ -3,10 +3,11 @@
 对照教学版 scripts/03_debug.py，这里是工程版（走两级检索链路）。
 用法：python -m agent diag <评测集题号>     # 题号从 1 开始
 """
-from . import index as index_mod
-from . import llm, rerank, settings
+from ..core import llm, settings
+from ..retrieval import index as index_mod
+from ..retrieval import rerank
 from .evaluate import _normalize, load_eval_set
-from .search import cosine_scores
+from ..retrieval.search import cosine_scores
 
 
 def diagnose(no, top_n=8):

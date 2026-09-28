@@ -10,8 +10,8 @@ import json
 import os
 import time
 
-from .. import llm, settings
-from ..search import cosine_scores
+from ..core import llm, settings
+from ..retrieval.search import cosine_scores
 from . import tools
 
 # 出现这些标记的回答一律不写入记忆（数据卫生：garbage in, garbage out）

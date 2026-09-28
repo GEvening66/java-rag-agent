@@ -2,3 +2,9 @@
 # 第 1 课只用 Python 标准库，不需要装任何东西
 openai>=1.0
 numpy
+# HTTP 服务层（api.py）
+fastapi>=0.110
+uvicorn>=0.27
+# 本地调试界面（web.py）与测试
+streamlit
+pytest

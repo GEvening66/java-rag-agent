@@ -42,7 +42,7 @@ import config
 
 K = 5  # 沿用第 3 课结论：k=5 召回 100%
 EVAL_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "eval", "eval_questions.json")
+    os.path.join(os.path.dirname(__file__), "..", "..", "eval", "eval_questions.json")
 )
 
 

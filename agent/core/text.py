@@ -34,13 +34,24 @@ def chunk_text(text, chunk_size=settings.CHUNK_SIZE, overlap=settings.OVERLAP):
     return chunks
 
 
+# 这些前缀是"说明 / 法律文本"，不是知识内容 → 不参与索引
+_SKIP_PREFIXES = ("readme", "license", "notice")
+
+
 def load_documents(data_dir=settings.DATA_DIR):
-    """读取 data/ 下所有 .md/.txt，返回 {文件名: 文本}。"""
+    """读取 data/ 下所有 .md/.txt，返回 {文件名: 文本}。
+
+    例外：说明与法律文本（`README*` / `LICENSE*` / `NOTICE*`）不参与索引——
+    它们是"语料说明书"，不是知识本身。不排除它们的代价是实打实的：
+    实测 `README.md` 多出 3 块、许可证文本多出 29 块，既污染检索，
+    又让"重建索引的块数"和评测报告里的块数对不上（这类偏差是静默的）。
+    """
     docs = {}
     if not os.path.isdir(data_dir):
         return docs
     for fname in sorted(os.listdir(data_dir)):
-        if fname.endswith((".md", ".txt")):
-            with open(os.path.join(data_dir, fname), encoding="utf-8") as f:
-                docs[fname] = f.read()
+        if not fname.endswith((".md", ".txt")) or fname.lower().startswith(_SKIP_PREFIXES):
+            continue
+        with open(os.path.join(data_dir, fname), encoding="utf-8") as f:
+            docs[fname] = f.read()
     return docs

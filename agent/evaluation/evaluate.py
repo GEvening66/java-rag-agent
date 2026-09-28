@@ -11,8 +11,8 @@
 import json
 import re
 
-from . import llm, settings
-from .agents import rag
+from ..core import llm, settings
+from ..pipeline import rag
 
 # 拒答识别（曾因关键词不全把 100% 拒答误报成 50%——评测指标本身也要被评测）
 REFUSAL_PATTERNS = (
@@ -64,7 +64,7 @@ def retrieval_eval(index, k=settings.TOP_K, use_rerank=None):
     - 判定：严格口径（证据句）为主，同时输出宽松口径（短答案子串）做对比
     - use_rerank：None=按 settings.USE_RERANK；False=纯向量（用于 A/B 对比）
     """
-    from . import rerank  # 局部导入，避免任何循环依赖
+    from ..retrieval import rerank  # 局部导入，避免任何循环依赖
 
     questions = [q for q in load_eval_set() if q["type"] != "no_answer"]
     stats, by_diff, misses = {}, {}, []

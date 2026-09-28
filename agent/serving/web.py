@@ -11,10 +11,9 @@
 """
 import streamlit as st
 
-from agent import index as index_mod, observability, settings
-from agent.agents import clarify
-from agent.agents import memory as memory_agent
-from agent.agents import qa, rag, tools
+from agent.core import observability, settings
+from agent.pipeline import clarify, memory as memory_agent, qa, rag, tools
+from agent.retrieval import index as index_mod
 
 st.set_page_config(page_title="Java 学习 Agent", page_icon="🤖", layout="centered")
 st.title("🤖 Java 学习 Agent")

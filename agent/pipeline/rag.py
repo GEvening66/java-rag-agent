@@ -2,8 +2,8 @@
 import json
 import re
 
-from .. import guardrails, llm, settings
-from ..search import search_top_k
+from ..core import guardrails, llm, settings
+from ..retrieval.search import search_top_k
 
 
 def _parse_json(text):
@@ -19,7 +19,7 @@ def _parse_json(text):
 
 def retrieve(question, index, k=settings.TOP_K):
     """检索 top-k 块（两级检索：向量粗召回 + cross-encoder 重排）。"""
-    from .. import rerank
+    from ..retrieval import rerank
     return rerank.retrieve_texts(question, index, top_k=k)
 
 

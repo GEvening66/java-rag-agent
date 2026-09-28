@@ -27,7 +27,7 @@ build_index = mod.build_index
 search_top_k = mod.search_top_k
 
 EVAL_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "eval", "eval_questions.json")
+    os.path.join(os.path.dirname(__file__), "..", "..", "eval", "eval_questions.json")
 )
 K = 3  # 和第 2 课 top-k 保持一致，第 5 课会实验不同 k
 
